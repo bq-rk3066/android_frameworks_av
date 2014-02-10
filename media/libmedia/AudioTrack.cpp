@@ -592,6 +592,7 @@ void AudioTrack::stop()
     }
 
     if (isOffloaded()) {
+        ALOGD("copl:AudioTrack::stop called");
         mState = STATE_STOPPING;
     } else {
         mState = STATE_STOPPED;
@@ -668,6 +669,7 @@ void AudioTrack::flush_l()
 
     mState = STATE_FLUSHED;
     if (isOffloaded()) {
+        ALOGD("copl:AudioTrack::flush_l called");
         mProxy->interrupt();
     }
     mProxy->flush();
@@ -677,6 +679,7 @@ void AudioTrack::flush_l()
 void AudioTrack::pause()
 {
     AutoMutex lock(mLock);
+    ALOGD_IF(isOffloaded(),"copl:AudioTrack::Pause called");
     if (mState == STATE_ACTIVE) {
         mState = STATE_PAUSED;
     } else if (mState == STATE_STOPPING) {
@@ -1142,6 +1145,8 @@ status_t AudioTrack::createTrack_l(
     }
 
     if (flags & AUDIO_OUTPUT_FLAG_COMPRESS_OFFLOAD) {
+        ALOGD("copl:sampleRate %u, channelMask %#x, format %d, session id %d",
+            sampleRate, mChannelMask, format, mSessionId);
         trackFlags |= IAudioFlinger::TRACK_OFFLOAD;
     }
 
