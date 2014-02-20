@@ -229,7 +229,8 @@ AwesomePlayer::AwesomePlayer()
       mTextDriver(NULL),
       mOffloadAudio(false),
       mAudioTearDown(false),
-      mCustomAVSync(false) {
+      mCustomAVSync(false),
+      mVSyncLocker(NULL) {
     CHECK_EQ(mClient.connect(), (status_t)OK);
 
     DataSource::RegisterDefaultSniffers();
@@ -1445,6 +1446,10 @@ void AwesomePlayer::initRenderer_l() {
         // just pushes those buffers to the ANativeWindow.
         mVideoRenderer =
             new AwesomeNativeWindowRenderer(mNativeWindow, rotationDegrees);
+        if (mVSyncLocker == NULL && VSyncLocker::isSyncRenderEnabled()) {
+            mVSyncLocker = new VSyncLocker();
+            mVSyncLocker->start();
+        }
     } else {
         // Other decoders are instantiated locally and as a consequence
         // allocate their buffers in local address space.  This renderer
@@ -2188,6 +2193,10 @@ void AwesomePlayer::onVideoEvent() {
                     mSeeking == SEEK_VIDEO_ONLY
                         ? MediaSource::ReadOptions::SEEK_NEXT_SYNC
                         : MediaSource::ReadOptions::SEEK_CLOSEST_SYNC);
+
+            if (mVSyncLocker != NULL) {
+                mVSyncLocker->resetProfile();
+            }
         }
         for (;;) {
             status_t err = mVideoSource->read(&mVideoBuffer, &options);
@@ -2418,6 +2427,9 @@ void AwesomePlayer::onVideoEvent() {
                     Mutex::Autolock autoLock(mStatsLock);
                     ++mStats.mNumVideoFramesDropped;
                     mStats.mConsecutiveFramesDropped++;
+                    if(mVSyncLocker != NULL) {
+                        mVSyncLocker->blockSync();
+                    }
                     if (mStats.mConsecutiveFramesDropped == 1){
                         mStats.mCatchupTimeStart = mTimeSource->getRealTimeUs();
                     }
@@ -2451,6 +2463,11 @@ void AwesomePlayer::onVideoEvent() {
 
     if (mVideoRenderer != NULL) {
         mSinceLastDropped++;
+
+        if (mVSyncLocker != NULL) {
+            mVSyncLocker->blockOnVSync();
+        }
+
         mVideoRenderer->render(mVideoBuffer);
         if (!mVideoRenderingStarted) {
             mVideoRenderingStarted = true;
