@@ -100,6 +100,7 @@ status_t AudioPlayer::start(bool sourceAlreadyStarted) {
             return err;
         }
     }
+    ALOGD("start of Playback, useOffload %d",useOffload());
 
     // We allow an optional INFO_FORMAT_CHANGED at the very beginning
     // of playback, if there is one, getFormat below will retrieve the
@@ -313,6 +314,7 @@ void AudioPlayer::pause(bool playPendingSamples) {
             mSourcePaused = true;
         }
     }
+    ALOGD("Pause Playback at %lld",getMediaTimeUs());
 #endif
 }
 
@@ -320,6 +322,7 @@ status_t AudioPlayer::resume() {
     CHECK(mStarted);
 #ifdef QCOM_HARDWARE
     CHECK(mSource != NULL);
+    ALOGD("Resume Playback at %lld",getMediaTimeUs());
     if (mSourcePaused == true) {
         mSourcePaused = false;
         mSource->start();
@@ -343,7 +346,7 @@ status_t AudioPlayer::resume() {
 void AudioPlayer::reset() {
     CHECK(mStarted);
 
-    ALOGV("reset: mPlaying=%d mReachedEOS=%d useOffload=%d",
+    ALOGD("reset: mPlaying=%d mReachedEOS=%d useOffload=%d",
                                 mPlaying, mReachedEOS, useOffload() );
 
     if (mAudioSink.get() != NULL) {

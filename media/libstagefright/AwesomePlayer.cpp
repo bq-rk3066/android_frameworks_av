@@ -377,6 +377,9 @@ status_t AwesomePlayer::setDataSource_l(
     reset_l();
 
     mUri = uri;
+    if (uri) {
+        printFileName(uri);
+    }
 
     if (headers) {
         mUriHeaders = *headers;
@@ -425,6 +428,9 @@ status_t AwesomePlayer::setDataSource(
 
     ALOGD("Before reset_l");
     reset_l();
+    if (fd) {
+       printFileName(fd);
+    }
 
     if(fd)
         printFileName(fd);
