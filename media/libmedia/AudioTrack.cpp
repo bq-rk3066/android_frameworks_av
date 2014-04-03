@@ -429,6 +429,7 @@ status_t AudioTrack::set(
     }
     else {
 #endif
+
     // create the IAudioTrack
     status_t status = createTrack_l(streamType,
                                   sampleRate,
