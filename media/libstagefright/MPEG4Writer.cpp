@@ -2374,10 +2374,13 @@ status_t MPEG4Writer::Track::threadEntry() {
 
             decodingTimeUs -= previousPausedDurationUs;
             cttsOffsetTimeUs =
+#ifdef QCOM_HARDWARE
                     timestampUs - decodingTimeUs;
-            tmpCttsOffsetTimeUs = kMaxCttsOffsetTimeUs;
-            ExtendedUtils::HFR::reCalculateTimeStamp(mMeta, tmpCttsOffsetTimeUs);
-            CHECK_GE(tmpCttsOffsetTimeUs, decodingTimeUs - timestampUs);
+            CHECK_GE(kMaxCttsOffsetTimeUs, decodingTimeUs - timestampUs);
+#else
+                    timestampUs + kMaxCttsOffsetTimeUs - decodingTimeUs;
+            CHECK_GE(cttsOffsetTimeUs, 0ll);
+#endif
             timestampUs = decodingTimeUs;
             ALOGV("decoding time: %lld and ctts offset time: %lld",
                 timestampUs, cttsOffsetTimeUs);
