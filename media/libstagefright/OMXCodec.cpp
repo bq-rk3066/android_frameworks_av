@@ -5200,12 +5200,6 @@ status_t OMXCodec::read(
         return UNKNOWN_ERROR;
     }
 
-#ifdef QCOM_HARDWARE
-    if (seeking) {
-        CHECK_EQ((int)mState, (int)EXECUTING);
-    }
-#endif
-
     if (mFilledBuffers.empty()) {
         return mSignalledEOS ? mFinalStatus : ERROR_END_OF_STREAM;
     }
