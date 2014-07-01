@@ -1698,6 +1698,7 @@ nsecs_t AudioTrack::processAudioBuffer(const sp<AudioTrackThread>& thread)
                 }
             }
 
+            mLock.unlock();
             mCbf(EVENT_STREAM_END, mUserData, NULL);
             {
                 AutoMutex lock(mLock);
