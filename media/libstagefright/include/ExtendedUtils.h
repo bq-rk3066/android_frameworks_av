@@ -146,8 +146,6 @@ struct ExtendedUtils {
 
     static bool checkIsThumbNailMode(const uint32_t flags, char* componentName);
 
-    //helper function to parse rtp port range form system property
-    static void parseRtpPortRangeFromSystemProperty(unsigned *start, unsigned *end);
 };
 
 class VSyncLocker : public RefBase {
