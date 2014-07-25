@@ -146,6 +146,7 @@ struct ExtendedUtils {
 
     static bool checkIsThumbNailMode(const uint32_t flags, char* componentName);
 
+    static void updateOutputBitWidth(sp<MetaData> format, bool isOffload);
 };
 
 class VSyncLocker : public RefBase {

@@ -557,6 +557,17 @@ bool ExtendedUtils::checkIsThumbNailMode(const uint32_t flags, char* componentNa
     return isInThumbnailMode;
 }
 
+void ExtendedUtils::updateOutputBitWidth(sp<MetaData> format, bool isOffload) {
+    char value[PROPERTY_VALUE_MAX] = {0};
+    property_get("audio.offload.24bit.enable", value, "0");
+    int32_t bitWidth = 16;
+    if (format->findInt32(kKeySampleBits, &bitWidth)) {
+        if (!((bitWidth == 24) && isOffload && atoi(value))) {
+            format->setInt32(kKeySampleBits, 16);
+        }
+    }
+}
+
 VSyncLocker::VSyncLocker()
     : mExitVsyncEvent(true),
       mLooper(NULL),
