@@ -376,7 +376,10 @@ status_t AwesomePlayer::setDataSource_l(
     reset_l();
 
     mUri = uri;
+
+#ifdef ENABLE_AV_ENHANCEMENTS
     ExtendedUtils::printFileName(uri);
+#endif
 
     if (headers) {
         mUriHeaders = *headers;
@@ -413,9 +416,12 @@ status_t AwesomePlayer::setDataSource(
 
     ALOGD("Before reset_l");
     reset_l();
+
+#ifdef ENABLE_AV_ENHANCEMENTS
     if (fd) {
-       ExtendedUtils::printFileName(fd);
+        ExtendedUtils::printFileName(fd);
     }
+#endif
 
     sp<DataSource> dataSource = new FileSource(fd, offset, length);
 
