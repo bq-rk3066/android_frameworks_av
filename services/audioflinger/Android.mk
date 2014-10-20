@@ -88,8 +88,9 @@ LOCAL_SRC_FILES += FastMixer.cpp FastMixerState.cpp AudioWatchdog.cpp
 
 LOCAL_CFLAGS += -DSTATE_QUEUE_INSTANTIATIONS='"StateQueueInstantiations.cpp"'
 
-ifneq ($(AUDIO_FEATURE_ENABLED_ULTRA_LOW_LATENCY),true)
-LOCAL_CFLAGS += -DNATIVE_FAST_TRACKS_ONLY
+# Define ENABLE_RESAMPLE_IN_PCM_OFFLOAD_PATH
+ifeq ($(strip $(BOARD_USE_RESAMPLER_IN_PCM_OFFLOAD_PATH)),true)
+LOCAL_CFLAGS += -DENABLE_RESAMPLER_IN_PCM_OFFLOAD_PATH
 endif
 
 # Define ANDROID_SMP appropriately. Used to get inline tracing fast-path.
