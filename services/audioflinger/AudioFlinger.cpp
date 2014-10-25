@@ -1588,7 +1588,13 @@ sp<IAudioRecord> AudioFlinger::openRecord(
         goto Exit;
     }
 #else
+#ifdef QCOM_HARDWARE
+    if (format != AUDIO_FORMAT_PCM_16_BIT &&
+            !audio_is_compress_voip_format(format) &&
+            !audio_is_compress_capture_format(format)) {
+#else
     if (format != AUDIO_FORMAT_PCM_16_BIT) {
+#endif
         ALOGE("openRecord() invalid format %d", format);
         lStatus = BAD_VALUE;
         goto Exit;
